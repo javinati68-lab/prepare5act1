@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr. Rocha’s English Class: Prepare 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .shiny-blue {
+            border: 2px solid #00bfff;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.5), inset 0 0 5px rgba(0, 191, 255, 0.3);
+            border-radius: 8px;
+            background-color: transparent;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .shiny-blue:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.8), inset 0 0 8px rgba(0, 191, 255, 0.5);
+        }
+        .section-container {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .section-container.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Puzzle Styles */
+        .puzzle-piece {
+            width: 100%;
+            height: 100%;
+            background-image: url('Image3.jpg');
+            background-size: 500% 400%; /* 5 cols, 4 rows */
+            cursor: grab;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-sizing: border-box;
+        }
+        .puzzle-piece:active {
+            cursor: grabbing;
+        }
+        .puzzle-slot {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(156, 163, 175, 0.3);
+            border: 1px dashed #9ca3af;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            #results-section { display: block !important; position: absolute; top: 0; left: 0; width: 100%; }
+            .section-container { display: none; }
+        }
+        
+        /* Custom message box */
+        #msg-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+        #msg-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+
+    <!-- Message Box Overlay -->
+    <div id="msg-overlay"></div>
+    <div id="msg-box" class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border dark:border-gray-700">
+        <h3 id="msg-title" class="text-xl font-bold mb-2">Message</h3>
+        <p id="msg-text" class="text-gray-600 dark:text-gray-300 mb-6"></p>
+        <button onclick="closeMsg()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition">OK</button>
+    </div>
+
+    <!-- Navigation & Header -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm no-print">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
+                Mr. Rocha’s English Class
+            </h1>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Toggle Dark/Light Mode">
+                    <i id="theme-icon" class="fas fa-moon text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 dark:bg-gray-700 h-2">
+            <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 transition-all duration-500" style="width: 0%;"></div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto p-4 md:p-8">
+        
+        <!-- INTRO SECTION -->
+        <section id="section-0" class="section-container active">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8 border border-gray-100 dark:border-gray-700">
+                <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">Prepare 5</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Student Name:</label>
+                        <input type="text" id="student-name" class="w-full p-3 shiny-blue dark:text-white" placeholder="Type your full name here...">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Select Date:</label>
+                        <input type="date" id="student-date" class="w-full p-3 shiny-blue dark:text-white dark:bg-gray-800" style="color-scheme: dark;">
+                    </div>
+                </div>
+
+                <div class="mb-8 rounded-xl overflow-hidden shadow-md">
+                    <img src="Image1.jpg" onerror="this.onerror=null; this.src='https://placehold.co/800x400/3b82f6/ffffff?text=Welcome+to+Prepare+5';" alt="Introduction Image" class="w-full h-auto object-cover">
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="showResults()" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold underline">Check Results Early</button>
+                    <button onclick="navigate(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform hover:scale-105">
+                        Start Activity 1 <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 1 -->
+        <section id="section-1" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Activity 1</h2>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-300">Open-ended</span>
+                </div>
+                
+                <p class="text-lg mb-6">Look at the image. Who are the people? Where are they and what are they doing?</p>
+                
+                <div class="mb-6 rounded-xl overflow-hidden shadow-md">
+                    <img src="Image2.jpg" onerror="this.onerror=null; this.src='https://placehold.co/800x400/8b5cf6/ffffff?text=Activity+1+Image';" alt="Activity 1 Image" class="w-full h-auto object-cover">
+                </div>
+
+                <textarea id="act1-ans" class="w-full p-4 shiny-blue rounded-xl dark:text-white dark:bg-gray-800 h-32 mb-6" placeholder="Type your answer here..."></textarea>
+
+                <div class="flex justify-between items-center mt-6">
+                    <button onclick="navigate(0)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkOpenEnded(1)" id="btn-check-1" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Save Answer</button>
+                        <button onclick="navigate(2)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 2 -->
+        <section id="section-2" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">Activity 2: Match the words to their meanings</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">Write the correct letter in each box.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+                    <!-- Words -->
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">1</span>
+                            <span class="w-32">charge</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="f">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">2</span>
+                            <span class="w-32">customer service</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="e">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">3</span>
+                            <span class="w-32">discount</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="j">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">4</span>
+                            <span class="w-32">exchange</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="c">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">5</span>
+                            <span class="w-32">online shopping</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="h">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">6</span>
+                            <span class="w-32">promotion</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="g">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">7</span>
+                            <span class="w-32">purchase</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="d">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">8</span>
+                            <span class="w-32">receipt</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="a">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">9</span>
+                            <span class="w-32">refund</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="b">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold w-6">10</span>
+                            <span class="w-32">send something back</span>
+                            <input type="text" maxlength="1" class="w-12 text-center p-2 shiny-blue font-bold uppercase act2-input" data-ans="i">
+                        </div>
+                    </div>
+                    
+                    <!-- Meanings -->
+                    <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-xl shadow-inner text-sm space-y-3">
+                        <p><strong>A.</strong> a piece of paper you receive when you buy something</p>
+                        <p><strong>B.</strong> money given back to you if you return something</p>
+                        <p><strong>C.</strong> take something back to a shop and replace it with something else</p>
+                        <p><strong>D.</strong> something that you buy</p>
+                        <p><strong>E.</strong> helping customers in a polite way</p>
+                        <p><strong>F.</strong> ask for money for a service or activity</p>
+                        <p><strong>G.</strong> a special offer on a product</p>
+                        <p><strong>H.</strong> shopping on the internet</p>
+                        <p><strong>I.</strong> return an item that you bought online</p>
+                        <p><strong>J.</strong> a lower price than usual for something</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-6">
+                    <button onclick="navigate(1)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkActivity(2, 'act2-input')" id="btn-check-2" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Check Answers</button>
+                        <button onclick="navigate(3)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 3 -->
+        <section id="section-3" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">Activity 3: Choose the correct answer</h2>
+                
+                <div class="space-y-6 text-lg leading-relaxed">
+                    <p>1 The 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="customer service">
+                            <option value="">--select--</option>
+                            <option value="customer service">customer service</option>
+                            <option value="online shopping">online shopping</option>
+                        </select> 
+                        is excellent in this shop. They're really helpful to customers.
+                    </p>
+                    
+                    <p>2 I saw an advertisement yesterday about a 20% 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="discount">
+                            <option value="">--select--</option>
+                            <option value="refund">refund</option>
+                            <option value="discount">discount</option>
+                        </select> 
+                        on all electrical items.
+                    </p>
+                    
+                    <p>3 If the shorts don't fit, you can always 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="send them back">
+                            <option value="">--select--</option>
+                            <option value="send them back">send them back</option>
+                            <option value="refund">refund</option>
+                        </select> 
+                        them.
+                    </p>
+                    
+                    <p>4 How much did you 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="spend">
+                            <option value="">--select--</option>
+                            <option value="shop">shop</option>
+                            <option value="spend">spend</option>
+                        </select> 
+                        on that new game?
+                    </p>
+                    
+                    <p>5 I've lost the 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="receipt">
+                            <option value="">--select--</option>
+                            <option value="refund">refund</option>
+                            <option value="receipt">receipt</option>
+                        </select> 
+                        , but perhaps you have the information on your computer system.
+                    </p>
+                    
+                    <p>6 When you work in a shop, you have to do more than just 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="serve">
+                            <option value="">--select--</option>
+                            <option value="serve">serve</option>
+                            <option value="charge">charge</option>
+                        </select> 
+                        customers.
+                    </p>
+                    
+                    <p>7 There are some great 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="promotions">
+                            <option value="">--select--</option>
+                            <option value="exchanges">exchanges</option>
+                            <option value="promotions">promotions</option>
+                        </select> 
+                        at M&F - you can buy one item and get one free!
+                    </p>
+                    
+                    <p>8 The watch shop doesn't 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="charge">
+                            <option value="">--select--</option>
+                            <option value="charge">charge</option>
+                            <option value="spend">spend</option>
+                        </select> 
+                        you if you need a new battery.
+                    </p>
+                    
+                    <p>9 The sales assistant said that I could get a 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="refund">
+                            <option value="">--select--</option>
+                            <option value="receipt">receipt</option>
+                            <option value="refund">refund</option>
+                        </select> 
+                        if I brought the jumper back within 30 days.
+                    </p>
+                    
+                    <p>10 You don't always have to pay delivery 
+                        <select class="p-1 shiny-blue dark:bg-gray-800 act3-input" data-ans="charges">
+                            <option value="">--select--</option>
+                            <option value="charges">charges</option>
+                            <option value="receipts">receipts</option>
+                        </select> 
+                        when you shop online.
+                    </p>
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="navigate(2)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkActivity(3, 'act3-input')" id="btn-check-3" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Check Answers</button>
+                        <button onclick="navigate(4)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 4 -->
+        <section id="section-4" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">Activity 4: Complete the sentences</h2>
+                <p class="mb-4">Complete the sentences with the words below. There are two words you do not need.</p>
+                
+                <div class="flex flex-wrap gap-3 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg mb-6 justify-center font-semibold">
+                    <span>charge</span> &bull; <span>discounts</span> &bull; <span>exchange</span> &bull; <span>online</span> &bull; <span>receipt</span> &bull; <span>refund</span> &bull; <span>served</span> &bull; <span>spends</span>
+                </div>
+
+                <div class="space-y-6 text-lg leading-relaxed">
+                    <p>1 The shop gave me a <input type="text" class="w-32 p-1 text-center shiny-blue act4-input dark:bg-gray-800" data-ans="receipt"> when I paid for my T-shirt.</p>
+                    <p>2 Get to BooksForAll now! We have amazing <input type="text" class="w-32 p-1 text-center shiny-blue act4-input dark:bg-gray-800" data-ans="discounts">!</p>
+                    <p>3 Have you ever done any <input type="text" class="w-32 p-1 text-center shiny-blue act4-input dark:bg-gray-800" data-ans="online"> shopping?</p>
+                    <p>4 The boy who <input type="text" class="w-32 p-1 text-center shiny-blue act4-input dark:bg-gray-800" data-ans="served"> us is in Year 12.</p>
+                    <p>5 I'd like to <input type="text" class="w-32 p-1 text-center shiny-blue act4-input dark:bg-gray-800" data-ans="exchange"> these jeans for these trousers, please.</p>
+                    <p>6 Monica <input type="text" class="w-32 p-1 text-center shiny-blue act4-input dark:bg-gray-800" data-ans="spends"> a lot of money on clothes.</p>
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="navigate(3)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkActivity(4, 'act4-input')" id="btn-check-4" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Check Answers</button>
+                        <button onclick="navigate(5)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 5 -->
+        <section id="section-5" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Activity 5</h2>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-300">Open-ended</span>
+                </div>
+                <p class="mb-6">Complete the sentences so that they are true for you.</p>
+
+                <div class="space-y-6 text-lg leading-relaxed">
+                    <p>1 I spend about <input type="text" class="w-48 p-1 text-center shiny-blue dark:bg-gray-800 act5-input"> on clothes per month.</p>
+                    <p>2 I love shopping for <input type="text" class="w-40 p-1 text-center shiny-blue dark:bg-gray-800 act5-input">, but I hate shopping for <input type="text" class="w-40 p-1 text-center shiny-blue dark:bg-gray-800 act5-input">.</p>
+                    <p>3 In Mexico, they charge us to go into <input type="text" class="w-48 p-1 text-center shiny-blue dark:bg-gray-800 act5-input">.</p>
+                    <p>4 The last thing that I sent back was <input type="text" class="w-48 p-1 text-center shiny-blue dark:bg-gray-800 act5-input">.</p>
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="navigate(4)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkOpenEnded(5)" id="btn-check-5" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Save Answers</button>
+                        <button onclick="navigate(6)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 6: PUZZLE -->
+        <section id="section-6" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">Activity 6: Image Puzzle</h2>
+                <p class="mb-4">Drag and drop each part of the image to form the complete picture.</p>
+                
+                <div class="flex flex-col md:flex-row gap-6 mb-6">
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-xl">Timer: <span id="puzzle-timer" class="text-blue-500">00:00</span></span>
+                            <div class="space-x-2">
+                                <button onclick="startPuzzle()" id="btn-start-puzzle" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded shadow">Start</button>
+                                <button onclick="restartPuzzle()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded shadow">Restart</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Puzzle Board -->
+                        <div id="puzzle-board" class="grid grid-cols-5 grid-rows-4 gap-1 w-full aspect-[5/4] bg-gray-200 dark:bg-gray-700 border-2 border-gray-400 p-1">
+                            <!-- 20 slots generated via JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-1/3 flex flex-col gap-4">
+                        <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded text-center shadow-inner text-sm font-semibold">Target Image</div>
+                        <img src="Image3.jpg" onerror="this.onerror=null; this.src='https://placehold.co/500x400/10b981/ffffff?text=Activity+3+Image';" alt="Target" class="w-full rounded border shadow-sm pointer-events-none">
+                    </div>
+                </div>
+                
+                <!-- Pieces Container -->
+                <div id="pieces-container" class="flex flex-wrap gap-2 bg-gray-100 dark:bg-gray-900 p-4 rounded-xl min-h-[120px] border-2 border-dashed border-gray-300 dark:border-gray-600 items-center justify-center">
+                    <p id="puzzle-placeholder-text" class="text-gray-400 text-center w-full">Click Start to generate pieces here.</p>
+                    <!-- Pieces generated via JS -->
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="navigate(5)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkPuzzle()" id="btn-check-6" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md" disabled style="opacity:0.5;">Check Puzzle</button>
+                        <button onclick="navigate(7)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 7 -->
+        <section id="section-7" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">Activity 7: Reading</h2>
+                <p class="mb-4">Five sentences have been removed from the text. For each question, choose the correct answer (A-H). There are three extra sentences which you do not need to use.</p>
+                
+                <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-xl shadow-inner text-sm space-y-2 mb-6">
+                    <p><strong>A</strong> You can get anything you like.</p>
+                    <p><strong>B</strong> They charge a lot of money to do this.</p>
+                    <p><strong>C</strong> We can't afford to buy much there, even when there are discounts or promotions.</p>
+                    <p><strong>D</strong> That's just outside the mall, too.</p>
+                    <p><strong>E</strong> Sometimes my friends and I share one.</p>
+                    <p><strong>F</strong> My favourite one is a new skirt I bought.</p>
+                    <p><strong>G</strong> I don't but my friends sometimes do.</p>
+                    <p><strong>H</strong> There are customer service desks, too, where you can ask for directions.</p>
+                </div>
+
+                <div class="prose dark:prose-invert max-w-none text-lg leading-relaxed">
+                    <h3 class="text-xl font-bold text-center">The BIGGEST shopping centre in the world</h3>
+                    <p>Dubai is an amazing place to go shopping and if you love fashion, this is the place to come! My favourite place is the Dubai Mall. It's the largest shopping centre in the world by total area and there are about 1,200 shops. There are different '<span class="font-bold text-blue-600 dark:text-blue-400">districts</span>' in the <span class="font-bold text-blue-600 dark:text-blue-400">mall</span>. For example, there's one whole <span class="font-bold text-blue-600 dark:text-blue-400">section</span> which sells shoes, and another which sells jewellery. I often spend time walking up and down Fashion Avenue with my friends - that's where the designer shops are, like Dolce & Gabbana and Dior. 
+                    <span class="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded mx-1">
+                        <strong>1</strong> 
+                        <select class="shiny-blue p-1 bg-white dark:bg-gray-800 act7-input" data-ans="C">
+                            <option value="">-</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                        </select>
+                    </span> 
+                    It's great to look in the windows at the <span class="font-bold text-blue-600 dark:text-blue-400">luxury</span> items, though.</p>
+
+                    <p>Some people think shopping malls are boring, but the Dubai Mall isn't! Of course, there are a lot of shops, but there are plenty of other things to see and do there. There's an aquarium and underwater zoo, and we go to the cinema or ice-skating there, as well. 
+                    <span class="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded mx-1">
+                        <strong>2</strong> 
+                        <select class="shiny-blue p-1 bg-white dark:bg-gray-800 act7-input" data-ans="H">
+                            <option value="">-</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                        </select>
+                    </span> 
+                    You need them because it's pretty easy to get lost!</p>
+
+                    <p>There are a lot of places to eat in the mall. 
+                    <span class="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded mx-1">
+                        <strong>3</strong> 
+                        <select class="shiny-blue p-1 bg-white dark:bg-gray-800 act7-input" data-ans="A">
+                            <option value="">-</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                        </select>
+                    </span> 
+                    There's fast food, many different kinds of international food, and healthy stuff, too. I love going to the Rainforest Café. We usually get fruit smoothies and burgers. There's one called the 'Jungle Chicken Burger', which is delicious. The desserts are great. I love seeing little kids' faces when the 'Sparkling Volcano' dessert arrives at their table. It's a huge chocolate thing! 
+                    <span class="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded mx-1">
+                        <strong>4</strong> 
+                        <select class="shiny-blue p-1 bg-white dark:bg-gray-800 act7-input" data-ans="E">
+                            <option value="">-</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                        </select>
+                    </span> 
+                    </p>
+
+                    <p>Next to the mall is the Burj Khalifa - the tallest building in the world. You can travel up to the observation deck at the top of the building from the mall. From there you can look down on Dubai. I don't go up there very often because everything looks so small from above that you can't see it very well. I go to the Dubai Fountain several times a year, though. 
+                    <span class="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded mx-1">
+                        <strong>5</strong> 
+                        <select class="shiny-blue p-1 bg-white dark:bg-gray-800 act7-input" data-ans="D">
+                            <option value="">-</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                        </select>
+                    </span> 
+                    It's the world's largest musical fountain and it's free to watch. It's fun! </p>
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="navigate(6)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkActivity(7, 'act7-input')" id="btn-check-7" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Check Answers</button>
+                        <button onclick="navigate(8)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 8 -->
+        <section id="section-8" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">Activity 8: Vocabulary</h2>
+                <p class="mb-6">Match the highlighted words and phrases in the article to the meanings.</p>
+                
+                <div class="space-y-4 text-lg">
+                    <p>1 expensive, comfortable or beautiful: <input type="text" class="w-32 p-1 text-center shiny-blue act8-input dark:bg-gray-800" data-ans="luxury"></p>
+                    <p>2 one of the parts that something is divided into: <input type="text" class="w-32 p-1 text-center shiny-blue act8-input dark:bg-gray-800" data-ans="section"></p>
+                    <p>3 an area that has a special character which makes it different from others: <input type="text" class="w-32 p-1 text-center shiny-blue act8-input dark:bg-gray-800" data-ans="district"></p>
+                    <p>4 another word for a shopping centre: <input type="text" class="w-32 p-1 text-center shiny-blue act8-input dark:bg-gray-800" data-ans="mall"></p>
+                    <p>5 how big something is: <input type="text" class="w-32 p-1 text-center shiny-blue act8-input dark:bg-gray-800" data-ans="area"></p>
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="navigate(7)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkActivity(8, 'act8-input')" id="btn-check-8" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Check Answers</button>
+                        <button onclick="navigate(9)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Next <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 9 -->
+        <section id="section-9" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Activity 9: Final Challenge</h2>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-300">Open-ended</span>
+                </div>
+                
+                <p class="text-lg mb-6">Read the story below. Tell Mr. Rocha what it is about.</p>
+                
+                <div class="mb-6 rounded-xl overflow-hidden shadow-md">
+                    <img src="Image4.jpg" onerror="this.onerror=null; this.src='https://placehold.co/800x400/ec4899/ffffff?text=Activity+9+Story+Image';" alt="Activity 9 Image" class="w-full h-auto object-cover">
+                </div>
+
+                <textarea id="act9-ans" class="w-full p-4 shiny-blue rounded-xl dark:text-white dark:bg-gray-800 h-32 mb-6" placeholder="Type your summary here..."></textarea>
+
+                <div class="flex justify-between items-center mt-6">
+                    <button onclick="navigate(8)" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-semibold px-4 py-2"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                    <div class="flex gap-4">
+                        <button onclick="checkOpenEnded(9)" id="btn-check-9" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">Save Answer</button>
+                        <button onclick="submitWorksheet()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-8 rounded-lg transition shadow-xl transform hover:scale-105">Submit Worksheet</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTS SECTION -->
+        <section id="results-section" class="section-container">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 mb-8 border-4 border-purple-500">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 mb-2">Worksheet Results</h2>
+                    <p id="res-student-info" class="text-xl font-semibold text-gray-600 dark:text-gray-300"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-8">
+                    <div class="text-center">
+                        <div class="inline-block rounded-full p-8 border-8 border-blue-500 shadow-xl mb-4">
+                            <span id="overall-score" class="text-5xl font-black text-blue-600 dark:text-blue-400">0%</span>
+                        </div>
+                        <p id="feedback-text" class="text-xl font-bold text-gray-700 dark:text-gray-200"></p>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl shadow-inner h-64 flex items-center justify-center">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+                    <h3 class="text-2xl font-bold text-blue-800 dark:text-blue-300 mb-4"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Recommendations</h3>
+                    <ul id="recommendations-list" class="list-disc pl-6 space-y-2 text-gray-800 dark:text-gray-200 font-medium">
+                        <!-- Filled by JS -->
+                    </ul>
+                </div>
+
+                <div class="flex justify-center gap-4 no-print">
+                    <button onclick="window.print()" class="bg-gray-800 hover:bg-black text-white font-bold py-3 px-8 rounded-xl shadow-lg transition"><i class="fas fa-print mr-2"></i> Print Results</button>
+                    <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition"><i class="fas fa-redo mr-2"></i> Restart Worksheet</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- State Management ---
+        const totalSections = 10; // 0 to 9
+        let currentSection = 0;
+        let scores = {
+            2: 0, 3: 0, 4: 0, 7: 0, 8: 0, puzzle: 0
+        };
+        let maxScores = {
+            2: 10, 3: 10, 4: 6, 7: 5, 8: 5, puzzle: 100 // Puzzle is % based internally
+        };
+        let checkedActivities = new Set();
+        let chartInstance = null;
+
+        // --- Custom Msg Box ---
+        function showMsg(title, text) {
+            document.getElementById('msg-title').innerText = title;
+            document.getElementById('msg-text').innerText = text;
+            document.getElementById('msg-overlay').style.display = 'block';
+            document.getElementById('msg-box').style.display = 'block';
+        }
+        function closeMsg() {
+            document.getElementById('msg-overlay').style.display = 'none';
+            document.getElementById('msg-box').style.display = 'none';
+        }
+
+        // --- Theme Toggle ---
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+            if(chartInstance) updateChartColors();
+        }
+
+        // Init theme
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+        }
+
+        // --- Navigation ---
+        function navigate(toSection) {
+            document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + toSection).classList.add('active');
+            currentSection = toSection;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgress() {
+            const completed = checkedActivities.size;
+            // 8 gradable/saveable activities total (1,2,3,4,5,6,7,8,9)
+            const percent = (completed / 9) * 100; 
+            document.getElementById('progress-bar').style.width = percent + '%';
+        }
+
+        // --- Generic Grader ---
+        function checkActivity(actNum, inputClass) {
+            if (checkedActivities.has(actNum)) return;
+            
+            const inputs = document.querySelectorAll('.' + inputClass);
+            let score = 0;
+            let total = inputs.length;
+
+            inputs.forEach(input => {
+                const userAns = input.value.trim().toLowerCase();
+                const correctAns = input.dataset.ans.toLowerCase();
+                
+                if (userAns === correctAns) {
+                    score++;
+                    input.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900', 'text-green-700', 'dark:text-green-300');
+                    input.insertAdjacentHTML('afterend', '<i class="fas fa-check text-green-500 ml-2"></i>');
+                } else {
+                    input.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900', 'text-red-700', 'dark:text-red-300');
+                    input.insertAdjacentHTML('afterend', `<i class="fas fa-times text-red-500 ml-2"></i><span class="text-sm text-green-600 dark:text-green-400 ml-1 font-bold">(${input.dataset.ans})</span>`);
+                }
+                input.disabled = true;
+            });
+
+            scores[actNum] = score;
+            checkedActivities.add(actNum);
+            
+            const btn = document.getElementById(`btn-check-${actNum}`);
+            btn.innerText = `Score: ${score}/${total}`;
+            btn.disabled = true;
+            btn.classList.replace('bg-green-500', 'bg-gray-500');
+            btn.classList.replace('hover:bg-green-600', 'hover:bg-gray-600');
+            
+            updateProgress();
+            showMsg('Activity Checked', `You scored ${score} out of ${total} on Activity ${actNum}.`);
+        }
+
+        function checkOpenEnded(actNum) {
+            if (checkedActivities.has(actNum)) return;
+            checkedActivities.add(actNum);
+            
+            const btn = document.getElementById(`btn-check-${actNum}`);
+            btn.innerText = "Saved";
+            btn.disabled = true;
+            btn.classList.replace('bg-green-500', 'bg-gray-500');
+            
+            updateProgress();
+            showMsg('Saved', `Activity ${actNum} responses have been saved.`);
+        }
+
+        // --- Puzzle Logic ---
+        let puzzleTimer;
+        let puzzleSeconds = 0;
+        let puzzleStarted = false;
+        let draggedPiece = null;
+
+        function startPuzzle() {
+            if(puzzleStarted) return;
+            puzzleStarted = true;
+            document.getElementById('btn-start-puzzle').disabled = true;
+            document.getElementById('puzzle-placeholder-text').style.display = 'none';
+            document.getElementById('btn-check-6').disabled = false;
+            document.getElementById('btn-check-6').style.opacity = '1';
+            
+            puzzleSeconds = 0;
+            updateTimerDisplay();
+            puzzleTimer = setInterval(() => {
+                puzzleSeconds++;
+                updateTimerDisplay();
+            }, 1000);
+
+            generatePuzzle();
+        }
+
+        function updateTimerDisplay() {
+            const m = String(Math.floor(puzzleSeconds / 60)).padStart(2, '0');
+            const s = String(puzzleSeconds % 60).padStart(2, '0');
+            document.getElementById('puzzle-timer').innerText = `${m}:${s}`;
+        }
+
+        function restartPuzzle() {
+            clearInterval(puzzleTimer);
+            puzzleStarted = false;
+            document.getElementById('btn-start-puzzle').disabled = false;
+            document.getElementById('puzzle-timer').innerText = '00:00';
+            document.getElementById('puzzle-board').innerHTML = '';
+            document.getElementById('pieces-container').innerHTML = '<p id="puzzle-placeholder-text" class="text-gray-400 text-center w-full">Click Start to generate pieces here.</p>';
+            document.getElementById('btn-check-6').disabled = true;
+            document.getElementById('btn-check-6').style.opacity = '0.5';
+            document.getElementById('btn-check-6').innerText = 'Check Puzzle';
+            document.getElementById('btn-check-6').classList.replace('bg-gray-500', 'bg-green-500');
+            checkedActivities.delete(6);
+        }
+
+        function generatePuzzle() {
+            const board = document.getElementById('puzzle-board');
+            const container = document.getElementById('pieces-container');
+            board.innerHTML = '';
+            container.innerHTML = '';
+
+            const cols = 5;
+            const rows = 4;
+            const pieces = [];
+
+            // fallback image if local fails
+            const imgUrl = 'Image3.jpg';
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const id = `p_${r}_${c}`;
+                    
+                    // Create slot
+                    const slot = document.createElement('div');
+                    slot.className = 'puzzle-slot flex items-center justify-center overflow-hidden';
+                    slot.dataset.targetId = id;
+                    
+                    // Setup drop events
+                    slot.addEventListener('dragover', (e) => e.preventDefault());
+                    slot.addEventListener('drop', handleDrop);
+                    board.appendChild(slot);
+
+                    // Create piece
+                    const piece = document.createElement('div');
+                    piece.className = 'puzzle-piece rounded-sm shadow-sm';
+                    piece.id = id;
+                    piece.draggable = true;
+                    // Calculate background position
+                    const bgX = (c / (cols - 1)) * 100;
+                    const bgY = (r / (rows - 1)) * 100;
+                    piece.style.backgroundImage = `url('${imgUrl}'), url('https://placehold.co/500x400/10b981/ffffff?text=Puzzle')`;
+                    piece.style.backgroundPosition = `${bgX}% ${bgY}%`;
+                    piece.style.width = '60px'; // fixed size for container
+                    piece.style.height = '48px';
+                    
+                    piece.addEventListener('dragstart', handleDragStart);
+                    pieces.push(piece);
+                }
+            }
+
+            // Shuffle pieces
+            pieces.sort(() => Math.random() - 0.5);
+            pieces.forEach(p => {
+                const wrap = document.createElement('div');
+                wrap.className = 'p-1 border border-transparent hover:border-blue-400 rounded';
+                wrap.appendChild(p);
+                container.appendChild(wrap);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedPiece = e.target;
+            e.dataTransfer.setData('text/plain', e.target.id);
+            setTimeout(() => e.target.style.opacity = '0.5', 0);
+        }
+
+        document.addEventListener('dragend', (e) => {
+            if(e.target.classList.contains('puzzle-piece')) {
+                e.target.style.opacity = '1';
+                draggedPiece = null;
+            }
+        });
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const slot = e.currentTarget;
+            if (draggedPiece) {
+                // Adjust size if dropping in board
+                draggedPiece.style.width = '100%';
+                draggedPiece.style.height = '100%';
+                
+                // If slot already has a piece, swap them
+                if (slot.children.length > 0) {
+                    const existingPiece = slot.children[0];
+                    const sourceContainer = draggedPiece.parentElement;
+                    sourceContainer.appendChild(existingPiece);
+                    // reset size for existing piece moving back
+                    if(sourceContainer.id !== 'puzzle-board' && !sourceContainer.classList.contains('puzzle-slot')) {
+                        existingPiece.style.width = '60px';
+                        existingPiece.style.height = '48px';
+                    }
+                }
+                slot.appendChild(draggedPiece);
+            }
+        }
+
+        function checkPuzzle() {
+            if(checkedActivities.has(6)) return;
+            clearInterval(puzzleTimer);
+            
+            const slots = document.querySelectorAll('.puzzle-slot');
+            let correct = 0;
+            slots.forEach(slot => {
+                if (slot.children.length > 0) {
+                    const piece = slot.children[0];
+                    if (piece.id === slot.dataset.targetId) {
+                        correct++;
+                        piece.style.border = '2px solid #22c55e'; // green
+                    } else {
+                        piece.style.border = '2px solid #ef4444'; // red
+                    }
+                    piece.draggable = false;
+                }
+            });
+
+            const scorePercent = (correct / 20) * 100;
+            scores.puzzle = scorePercent;
+            checkedActivities.add(6);
+            
+            const btn = document.getElementById('btn-check-6');
+            btn.innerText = `Score: ${Math.round(scorePercent)}%`;
+            btn.disabled = true;
+            btn.classList.replace('bg-green-500', 'bg-gray-500');
+            updateProgress();
+            
+            showMsg('Puzzle Checked', `You placed ${correct} out of 20 pieces correctly in ${puzzleSeconds} seconds!`);
+        }
+
+
+        // --- Submit & Results ---
+        function showResults() {
+            submitWorksheet(true);
+        }
+
+        function submitWorksheet(early = false) {
+            // Auto grade un-checked ones (0 points for skipped)
+            const actsToGrade = [2, 3, 4, 7, 8];
+            actsToGrade.forEach(act => {
+                if(!checkedActivities.has(act)) checkActivity(act, `act${act}-input`);
+            });
+            if(puzzleStarted && !checkedActivities.has(6)) checkPuzzle();
+
+            document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('results-section').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const name = document.getElementById('student-name').value || 'Student';
+            const date = document.getElementById('student-date').value || new Date().toLocaleDateString();
+            document.getElementById('res-student-info').innerText = `Name: ${name} | Date: ${date}`;
+
+            // Calculate overall
+            let totalEarned = 0;
+            let totalPossible = 0;
+            
+            actsToGrade.forEach(act => {
+                totalEarned += scores[act];
+                totalPossible += maxScores[act];
+            });
+
+            const academicPercent = totalPossible > 0 ? (totalEarned / totalPossible) * 100 : 0;
+            const puzzlePoints = scores.puzzle || 0; // Use puzzle % as bonus or average
+            const finalScore = Math.round((academicPercent * 0.8) + (puzzlePoints * 0.2)); // 80% academics, 20% puzzle
+            
+            document.getElementById('overall-score').innerText = `${finalScore}%`;
+
+            let feedback = "";
+            if(finalScore >= 90) feedback = "Excellent work! You have a strong grasp of the vocabulary and concepts.";
+            else if(finalScore >= 70) feedback = "Good job! You understand most of the material, but review some vocabulary.";
+            else feedback = "Keep practicing! Review the lesson on shopping vocabulary and reading comprehension.";
+            document.getElementById('feedback-text').innerText = feedback;
+
+            generateRecommendations(finalScore, scores);
+            renderChart();
+        }
+
+        function generateRecommendations(final, scr) {
+            const list = document.getElementById('recommendations-list');
+            list.innerHTML = '';
+            const recs = [];
+
+            // 1
+            if(final >= 90) recs.push("Challenge yourself with more advanced texts about global economics or business English.");
+            else recs.push("Review the core vocabulary list daily (discount, refund, receipt, exchange).");
+            
+            // 2
+            if(scr[2] < maxScores[2]) recs.push("Practice matching definitions. Make flashcards for words like 'charge', 'promotion', and 'purchase'.");
+            else recs.push("Great job on definitions! Try using these words in sentences.");
+            
+            // 3
+            if(scr[3] < maxScores[3]) recs.push("Pay attention to context clues when choosing between words like 'spend' and 'charge'.");
+            
+            // 4
+            if(scr[4] < maxScores[4]) recs.push("Read sentences completely before filling in blanks to ensure grammatical flow.");
+            
+            // 5
+            recs.push("For open-ended questions, always try to write full sentences to practice grammar.");
+            
+            // 6
+            if(scr.puzzle < 100) recs.push("Visual memory games can help focus. Try more puzzles in English contexts.");
+            else recs.push("Excellent visual and spatial skills on the puzzle!");
+            
+            // 7
+            if(scr[7] < maxScores[7]) recs.push("Reading comprehension: Look for pronoun references (e.g., 'them', 'it') to connect missing sentences.");
+            else recs.push("Strong reading skills! You easily identify context flow in texts.");
+            
+            // 8
+            if(scr[8] < maxScores[8]) recs.push("Vocabulary in context: Highlight unknown words when reading and guess meanings before using a dictionary.");
+
+            // Pad to 8 if needed
+            while(recs.length < 8) {
+                recs.push("Practice speaking about your shopping habits with a partner in English.");
+            }
+
+            recs.slice(0, 8).forEach((r, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>Rec ${idx + 1}:</strong> ${r}`;
+                list.appendChild(li);
+            });
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            
+            const data = [
+                Math.round((scores[2]/maxScores[2])*100) || 0,
+                Math.round((scores[3]/maxScores[3])*100) || 0,
+                Math.round((scores[4]/maxScores[4])*100) || 0,
+                Math.round((scores[7]/maxScores[7])*100) || 0,
+                Math.round((scores[8]/maxScores[8])*100) || 0
+            ];
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#e5e7eb' : '#374151';
+            const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+            if(chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Act 2 (Match)', 'Act 3 (Choose)', 'Act 4 (Fill)', 'Act 7 (Read)', 'Act 8 (Vocab)'],
+                    datasets: [{
+                        label: 'Score Percentage',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)', // blue
+                            'rgba(16, 185, 129, 0.8)', // green
+                            'rgba(245, 158, 11, 0.8)', // yellow
+                            'rgba(236, 72, 153, 0.8)', // pink
+                            'rgba(139, 92, 246, 0.8)'  // purple
+                        ],
+                        borderColor: [
+                            'rgb(37, 99, 235)',
+                            'rgb(5, 150, 105)',
+                            'rgb(217, 119, 6)',
+                            'rgb(219, 39, 119)',
+                            'rgb(124, 58, 237)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartColors() {
+            if(!chartInstance) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#e5e7eb' : '#374151';
+            const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+            chartInstance.options.scales.y.ticks.color = textColor;
+            chartInstance.options.scales.x.ticks.color = textColor;
+            chartInstance.options.scales.y.grid.color = gridColor;
+            chartInstance.update();
+        }
+
+    </script>
+</body>
+</html>
